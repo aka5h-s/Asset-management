@@ -1,0 +1,161 @@
+package com.hexaware.assetmanagement.entity;
+
+
+import java.time.LocalDateTime;
+
+import java.util.Date;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
+/** Represents a service request for asset maintenance or issues */
+@Entity
+@Table(name = "service_request")
+public class ServiceRequest {
+
+	public enum IssueType { HARDWARE, SOFTWARE, NETWORK, ACCESS, OTHER }
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int serviceRequestId;
+
+	@NotNull(message = "Employee cannot be null")
+    @ManyToOne
+    @JoinColumn(name = "employee_id", nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Employee employee;
+
+	
+	
+	@NotNull(message = "Asset cannot be null")
+    @ManyToOne
+    @JoinColumn(name = "asset_id")
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Asset asset;
+    
+
+	@NotNull(message = "Description cannot be null")
+    @Size(min = 5, message = "Description must be at least 5 characters")
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String description;
+
+    @NotNull(message = "Issue type cannot be null")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "issue_type", nullable = false)
+    private IssueType issueType;
+
+    
+    @NotNull(message = "Status cannot be null")
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Status status = Status.Pending;
+
+    @NotNull(message = "Date cannot be null")
+    @Column(name = "requested_at", nullable = false)
+	private LocalDateTime requestedAt;
+    
+    public enum Status {
+    	Pending, Transit, Completed
+    }
+
+	public ServiceRequest() {
+		super();
+	}
+
+	
+	public ServiceRequest(int serviceRequestId, @NotNull(message = "Employee cannot be null") Employee employee,
+			@NotNull(message = "Asset cannot be null") Asset asset,
+			@NotNull(message = "Description cannot be null") @Size(min = 5, message = "Description must be at least 5 characters") String description,
+			IssueType issueType, @NotNull(message = "Status cannot be null") Status status,
+			@NotNull(message = "Date cannot be null") LocalDateTime requestedAt) {
+		super();
+		this.serviceRequestId = serviceRequestId;
+		this.employee = employee;
+		this.asset = asset;
+		this.description = description;
+		this.issueType = issueType;
+		this.status = status;
+		this.requestedAt = requestedAt;
+	}
+
+
+	public int getServiceRequestId() {
+		return serviceRequestId;
+	}
+
+	public void setServiceRequestId(int serviceRequestId) {
+		this.serviceRequestId = serviceRequestId;
+	}
+
+	public Employee getEmployee() {
+		return employee;
+	}
+
+	public void setEmployee(Employee employee) {
+		this.employee = employee;
+	}
+	
+	
+
+	public Asset getAsset() {
+		return asset;
+	}
+
+	public void setAsset(Asset asset) {
+		this.asset = asset;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public IssueType getIssueType() {
+		return issueType;
+	}
+
+	public void setIssueType(IssueType issueType) {
+		this.issueType = issueType;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
+	}
+
+	public LocalDateTime getRequestedAt() {
+		return requestedAt;
+	}
+
+	public void setRequestedAt(LocalDateTime requestedAt) {
+		this.requestedAt = requestedAt;
+	}
+
+	@Override
+	public String toString() {
+		return "ServiceRequest [serviceRequestId=" + serviceRequestId + ", employee=" + employee + ", asset=" + asset
+				+ ", description=" + description + ", issueType=" + issueType + ", status=" + status + ", requestedAt="
+				+ requestedAt + "]";
+	}
+    
+   
+    
+}
